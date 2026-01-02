@@ -78,7 +78,7 @@
             <div class="bg-white p-2 rounded inline-block">
                 <img id="qr-image" src="" alt="QR Code" class="w-48 h-48">
             </div>
-            <p class="text-xs text-gray-500 mt-4">Let friends scan this to join the cause.</p>
+            <p class="text-xs text-gray-500 mt-4">Wait a sec...Let friends scan this to join the cause.</p>
             <button onclick="closeQr()"
                 class="mt-4 w-full bg-gray-200 text-gray-800 font-bold py-2 rounded hover:bg-gray-300 transition">Close</button>
         </div>
@@ -88,9 +88,17 @@
     <main class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden min-h-[500px] relative">
 
         <!-- HEADER -->
-        <header class="bg-red-600 p-6 text-white text-center">
-            <h1 class="text-2xl font-bold tracking-wider">LIFESAVER CONNECT</h1>
-            <p class="text-xs opacity-80 mt-1 uppercase tracking-widest">Blood Donation Camp 2026</p>
+        <header class="bg-red-700 text-white p-6 rounded-b-3xl shadow-lg relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                <svg viewBox="0 0 100 100" fill="currentColor">
+                    <circle cx="20" cy="20" r="15" />
+                    <circle cx="80" cy="80" r="20" />
+                </svg>
+            </div>
+            <div class="relative z-10 text-center">
+                <h1 class="text-2xl font-black tracking-tight uppercase">Savitribai Phule Pune University</h1>
+                <p class="text-red-100 text-xs mt-1 font-medium tracking-wide">BLOOD DONATION CAMP 2026</p>
+            </div>
         </header>
 
         <!-- CONTENT AREA -->
@@ -118,6 +126,17 @@
                 <!-- Quote -->
                 <div class="text-center mb-6">
                     <p class="text-sm text-gray-500 italic">"The gift of blood is a gift to someone's life."</p>
+                </div>
+
+                <!-- Guidelines (Short & Easy) -->
+                <div class="bg-blue-50 p-4 rounded-xl text-left mb-6 border border-blue-100">
+                    <h3 class="text-xs font-bold text-blue-600 uppercase mb-2">Before You Donate</h3>
+                    <ul class="text-xs text-blue-800 space-y-1 list-disc list-inside">
+                        <li>You must be 18-65 years old.</li>
+                        <li>Weight should be > 45kg.</li>
+                        <li>Eat a light meal before donating.</li>
+                        <li>Do not consume alcohol 24hrs prior.</li>
+                    </ul>
                 </div>
 
                 <h2 class="text-xl font-bold text-gray-800 mb-2">Join the Cause</h2>
@@ -164,13 +183,19 @@
                 <div class="mb-6">
                     <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">STEP 2 / 5</span>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">You are a Hero, <span id="donor-name-display"
-                        class="text-red-600">Friend</span>!</h2>
-                <p class="text-gray-500 text-sm mb-8">While you donate, take a quick selfie to inspire others.</p>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">You are a Hero, <span id="donor-name-display"
+                        class="text-red-600"></span>!</h2>
+                <p class="text-gray-500 text-sm mb-6">Please upload a selfie at the camp.</p>
 
-                <div class="mb-8">
+                <!-- Motivation Text -->
+                <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100 mb-6">
+                    <p class="text-xs text-yellow-800 font-medium">✨ "Adding a selfie will motivate us and help
+                        propagate our noble work ahead!"</p>
+                </div>
+
+                <div class="mb-8 relative group cursor-pointer w-64 h-64 mx-auto">
                     <label for="selfie-upload"
-                        class="cursor-pointer block w-full aspect-[4/3] bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-red-50 hover:border-red-300 transition overflow-hidden relative">
+                        class="cursor-pointer block w-full h-full bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-red-50 hover:border-red-300 transition overflow-hidden relative">
                         <div id="selfie-preview" class="hidden w-full h-full bg-cover bg-center absolute inset-0"></div>
                         <div id="selfie-placeholder" class="text-center p-4">
                             <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"
@@ -199,12 +224,23 @@
                 <div class="mb-6">
                     <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">STEP 3 / 5</span>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Time to Recharge</h2>
-                <p class="text-gray-500 text-sm mb-8">Enjoy your refreshments! Snap a photo of your snack.</p>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Time to Recharge</h2>
+                <p class="text-gray-500 text-sm mb-6">Having a snack? Capture the moment.</p>
 
-                <div class="mb-8">
+                <!-- Post-Donation Guidelines -->
+                <div class="bg-green-50 p-4 rounded-xl text-left mb-6 border border-green-100 mx-auto max-w-sm">
+                    <h3 class="text-xs font-bold text-green-700 uppercase mb-2">After Donation Care</h3>
+                    <ul class="text-xs text-green-800 space-y-1 list-disc list-inside">
+                        <li>Drink plenty of fluids (water/juice).</li>
+                        <li>Avoid heavy lifting for 12 hours.</li>
+                        <li>Keep the bandage on for a few hours.</li>
+                        <li>Feel dizzy? Lie down immediately.</li>
+                    </ul>
+                </div>
+
+                <div class="mb-8 relative group cursor-pointer w-64 h-64 mx-auto">
                     <label for="snack-upload"
-                        class="cursor-pointer block w-full aspect-[4/3] bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-green-50 hover:border-green-300 transition overflow-hidden relative">
+                        class="cursor-pointer block w-full h-full bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-green-50 hover:border-green-300 transition overflow-hidden relative">
                         <div id="snack-preview" class="hidden w-full h-full bg-cover bg-center absolute inset-0"></div>
                         <div id="snack-placeholder" class="text-center p-4">
                             <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"
@@ -268,6 +304,17 @@
                 </div>
                 <h2 class="text-3xl font-bold text-gray-800 mb-2">Mission Accomplished!</h2>
                 <p class="text-gray-500 text-sm mb-6">Thank you for saving lives today.</p>
+
+                <!-- Ambassador Message -->
+                <div class="bg-blue-50 p-4 rounded-xl mb-6 border border-blue-100">
+                    <p class="text-sm text-blue-900 font-semibold mb-2">Be an Ambassador!</p>
+                    <p class="text-xs text-blue-700 leading-relaxed">
+                        Share your unique link below. Guide your friends to complete the steps.
+                        <br><br>
+                        <span class="font-bold bg-blue-200 px-1 rounded">PRO TIP:</span> Any donor with <span
+                            class="font-black">5+ Referrals</span> will receive extra special perks!
+                    </p>
+                </div>
 
                 <!-- Stats Card -->
                 <div class="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
@@ -389,10 +436,29 @@
             setLoading(btn, true);
 
             const formData = new FormData(e.target);
+            const name = formData.get('name').trim();
+            const mobile = formData.get('mobile').trim();
+
+            // --- VALIDATIONS ---
+            const nameRegex = /^[a-zA-Z\s]+$/;
+            if (!nameRegex.test(name)) {
+                alert("Please enter a valid Name (Letters only, no numbers).");
+                setLoading(btn, false);
+                return;
+            }
+
+            const mobileRegex = /^[0-9]{10}$/;
+            if (!mobileRegex.test(mobile)) {
+                alert("Please enter a valid 10-digit Mobile Number.");
+                setLoading(btn, false);
+                return;
+            }
+            // -------------------
+
             const payload = {
                 action: 'register',
-                name: formData.get('name'),
-                mobile: formData.get('mobile'),
+                name: name,
+                mobile: mobile,
                 blood_group: formData.get('blood_group'),
                 referrer: STATE.ref
             };
@@ -417,6 +483,12 @@
             const file = fileInput.files[0];
             if (!file) {
                 alert("Please select a photo first!");
+                return;
+            }
+
+            // Size Validation (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert("File is too large! Please choose an image under 10MB.");
                 return;
             }
 
