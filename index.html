@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Donation Hero</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .hidden-view {
+            display: none;
+        }
+
+        /* Loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ef4444;
+            /* Red-500 */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- CONFIGURATION MODAL (For first run) -->
+    <div id="config-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">Setup Required</h3>
+            <p class="mb-4 text-sm text-gray-600">Please paste your Google Apps Script Web App URL below to connect the
+                backend.</p>
+            <input type="text" id="api-url-input" placeholder="https://script.google.com/macros/s/..."
+                class="w-full p-3 border rounded mb-4 focus:ring-2 focus:ring-red-500 outline-none">
+            <button onclick="saveConfig()"
+                class="w-full bg-red-600 text-white font-bold py-3 rounded hover:bg-red-700 transition">Save &
+                Start</button>
+        </div>
+    </div>
+
+    <!-- QR CODE MODAL -->
+    <div id="qr-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden"
+        onclick="closeQr()">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm text-center" onclick="event.stopPropagation()">
+            <h3 class="text-xl font-bold mb-4 text-gray-800">Your Hero Badge</h3>
+            <div class="bg-white p-2 rounded inline-block">
+                <img id="qr-image" src="" alt="QR Code" class="w-48 h-48">
+            </div>
+            <p class="text-xs text-gray-500 mt-4">Let friends scan this to join the cause.</p>
+            <button onclick="closeQr()"
+                class="mt-4 w-full bg-gray-200 text-gray-800 font-bold py-2 rounded hover:bg-gray-300 transition">Close</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden min-h-[500px] relative">
+
+        <!-- HEADER -->
+        <header class="bg-red-600 p-6 text-white text-center">
+            <h1 class="text-2xl font-bold tracking-wider">LIFESAVER CONNECT</h1>
+            <p class="text-xs opacity-80 mt-1 uppercase tracking-widest">Blood Donation Camp 2026</p>
+        </header>
+
+        <!-- CONTENT AREA -->
+        <div class="p-6">
+
+            <!-- VIEW 1: REGISTRATION (THE GATE) -->
+            <section id="view-1" class="hidden-view animate-fade-in">
+                <h2 class="text-xl font-bold text-gray-800 mb-2">Join the Cause</h2>
+                <p class="text-gray-500 text-sm mb-6">Become a hero today. Please register to proceed.</p>
+
+                <form id="reg-form" onsubmit="handleRegister(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">FULL NAME</label>
+                        <input type="text" name="name" required
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-red-500 transition"
+                            placeholder="e.g. Kapil Thakur">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">MOBILE NUMBER</label>
+                        <input type="tel" name="mobile" required
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-red-500 transition"
+                            placeholder="e.g. 9876543210">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">BLOOD GROUP</label>
+                        <select name="blood_group" required
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-red-500 transition bg-white">
+                            <option value="">Select Group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-red-600 text-white font-bold py-4 rounded-xl mt-4 shadow-lg hover:shadow-xl hover:bg-red-700 transition transform hover:-translate-y-1">
+                        JOIN THE CAUSE
+                    </button>
+                    <p class="text-center text-xs text-gray-400 mt-4">Safe & Secure Registration</p>
+                </form>
+            </section>
+
+            <!-- VIEW 2: THE DONATION (THE ACTION) -->
+            <section id="view-2" class="hidden-view animate-fade-in text-center">
+                <div class="mb-6">
+                    <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">STEP 2 / 4</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">You are a Hero, <span id="donor-name-display"
+                        class="text-red-600">Friend</span>!</h2>
+                <p class="text-gray-500 text-sm mb-8">While you donate, take a quick selfie to inspire others.</p>
+
+                <div class="mb-8">
+                    <label for="selfie-upload"
+                        class="cursor-pointer block w-full aspect-[4/3] bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-red-50 hover:border-red-300 transition overflow-hidden relative">
+                        <div id="selfie-preview" class="hidden w-full h-full bg-cover bg-center absolute inset-0"></div>
+                        <div id="selfie-placeholder" class="text-center p-4">
+                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
+                                </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <span class="text-sm font-semibold text-gray-600">Tap to Upload Selfie</span>
+                        </div>
+                    </label>
+                    <input type="file" id="selfie-upload" accept="image/*" class="hidden"
+                        onchange="handleImagePreview(this, 'selfie-preview')">
+                </div>
+
+                <button id="btn-upload-selfie" onclick="uploadPhoto('selfie')"
+                    class="w-full bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    UPLOAD & CONTINUE
+                </button>
+            </section>
+
+            <!-- VIEW 3: THE REFRESHMENT (THE BREAK) -->
+            <section id="view-3" class="hidden-view animate-fade-in text-center">
+                <div class="mb-6">
+                    <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">STEP 3 / 4</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Time to Recharge</h2>
+                <p class="text-gray-500 text-sm mb-8">Enjoy your refreshments! Snap a photo of your snack.</p>
+
+                <div class="mb-8">
+                    <label for="snack-upload"
+                        class="cursor-pointer block w-full aspect-[4/3] bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-green-50 hover:border-green-300 transition overflow-hidden relative">
+                        <div id="snack-preview" class="hidden w-full h-full bg-cover bg-center absolute inset-0"></div>
+                        <div id="snack-placeholder" class="text-center p-4">
+                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                </path>
+                            </svg>
+                            <span class="text-sm font-semibold text-gray-600">Tap to Upload Snack</span>
+                        </div>
+                    </label>
+                    <input type="file" id="snack-upload" accept="image/*" class="hidden"
+                        onchange="handleImagePreview(this, 'snack-preview')">
+                </div>
+
+                <button id="btn-upload-snack" onclick="uploadPhoto('snack')"
+                    class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    COMPLETE MISSION
+                </button>
+            </section>
+
+            <!-- VIEW 4: THE AMBASSADOR (THE EXIT) -->
+            <section id="view-4" class="hidden-view animate-fade-in text-center">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Mission Accomplished!</h2>
+                <p class="text-gray-500 text-sm mb-6">Thank you for saving lives today.</p>
+
+                <!-- Stats Card -->
+                <div class="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
+                    <div class="text-xs text-gray-400 font-bold uppercase tracking-wide">Your Impact Score</div>
+                    <div id="impact-score" class="text-4xl font-black text-red-600 mt-1">0</div>
+                    <div class="text-xs text-gray-400 mt-1">Friends Referred</div>
+                    <button onclick="fetchStats()"
+                        class="text-xs text-blue-500 hover:text-blue-700 underline mt-2">Refresh Score</button>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    <button onclick="handleShare()"
+                        class="w-full bg-green-500 text-white font-bold py-3 rounded-xl shadow hover:bg-green-600 transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                        </svg>
+                        Share via WhatsApp
+                    </button>
+                    <div id="referral-link-container"
+                        class="bg-gray-100 p-3 rounded-lg text-xs text-gray-500 break-all text-center cursor-pointer hover:bg-gray-200 transition"
+                        onclick="copyReferralLink()">
+                        Loading link...
+                    </div>
+                    <button onclick="showQr()"
+                        class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-xl shadow-sm hover:bg-gray-50 transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4v1m6 11h2m-6 0h-2v4h2v-4zM6 6h6v6H6V6zm1.5 1.5v3h3v-3h-3zm6.5 6.5h6v6h-6v-6zm1.5 1.5v3h3v-3h-3zM6 18h6v6H6v-6zm1.5 1.5v3h3v-3h-3z">
+                            </path>
+                        </svg>
+                        Show QR Code
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-8 text-center text-gray-400 text-xs">
+        <p>&copy; 2026 Blood Donation Camp</p>
+        <button onclick="localStorage.clear(); window.location.reload();"
+            class="mt-4 text-red-300 underline opacity-50">Reset App</button>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- CONFIG & STATE ---
+        let API_URL = "https://script.google.com/macros/s/AKfycbzH4jTX1zxKO4YzXb7JDQSagbSFkRtHpkqsyPCzN_QwUdBdJV-QPps55eDJrG_yexYt/exec";
+        let STATE = {
+            step: parseInt(localStorage.getItem("blood_donor_step")) || 1,
+            donorId: localStorage.getItem("blood_donor_id") || null,
+            name: (localStorage.getItem("blood_donor_name") && localStorage.getItem("blood_donor_name") !== "undefined") ? localStorage.getItem("blood_donor_name") : "Hero",
+            ref: new URLSearchParams(window.location.search).get("ref") || ""
+        };
+
+        // --- INIT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!API_URL) {
+                document.getElementById('config-modal').classList.remove('hidden');
+            } else {
+                renderView();
+                if (STATE.step === 4) fetchStats();
+            }
+        });
+
+        function saveConfig() {
+            const input = document.getElementById('api-url-input').value.trim();
+            if (input) {
+                API_URL = input;
+                localStorage.setItem("blood_donor_api_url", API_URL);
+                document.getElementById('config-modal').classList.add('hidden');
+                renderView();
+            } else {
+                alert("Please enter a valid URL");
+            }
+        }
+
+        // --- ROUTING ---
+        function renderView() {
+            // Hide all views
+            [1, 2, 3, 4].forEach(i => {
+                document.getElementById(`view-${i}`).classList.add('hidden-view');
+            });
+
+            // Show current view
+            document.getElementById(`view-${STATE.step}`).classList.remove('hidden-view');
+
+            // Update UI elements
+            if (STATE.step === 2 || STATE.step === 3 || STATE.step === 4) {
+                const nameDisplay = document.getElementById('donor-name-display');
+                if (nameDisplay) nameDisplay.innerText = STATE.name;
+            }
+            if (STATE.step === 4) {
+                updateReferralLink();
+            }
+        }
+
+        function nextStep() {
+            STATE.step++;
+            localStorage.setItem("blood_donor_step", STATE.step);
+            renderView();
+        }
+
+        // --- API ACTION: REGISTER ---
+        async function handleRegister(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            setLoading(btn, true);
+
+            const formData = new FormData(e.target);
+            const payload = {
+                action: 'register',
+                name: formData.get('name'),
+                mobile: formData.get('mobile'),
+                blood_group: formData.get('blood_group'),
+                referrer: STATE.ref
+            };
+
+            const result = await apiCall(payload);
+            setLoading(btn, false);
+
+            if (result && result.status === 'success') {
+                STATE.donorId = result.donor_id;
+                STATE.name = result.name;
+                localStorage.setItem("blood_donor_id", STATE.donorId);
+                localStorage.setItem("blood_donor_name", STATE.name);
+                nextStep();
+            } else {
+                alert("Registration failed: " + (result?.message || "Unknown error"));
+            }
+        }
+
+        // --- API ACTION: UPLOAD ---
+        async function uploadPhoto(type) {
+            const fileInput = document.getElementById(`${type}-upload`);
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("Please select a photo first!");
+                return;
+            }
+
+            const btn = document.getElementById(`btn-upload-${type}`);
+            setLoading(btn, true, "Uploading...");
+
+            try {
+                // Compress image before upload
+                const base64 = await compressImage(file);
+
+                const payload = {
+                    action: `upload_${type}`, // upload_selfie or upload_snack
+                    donor_id: STATE.donorId,
+                    image_base64: base64, // Send raw base64 string
+                    filename: type
+                };
+
+                const result = await apiCall(payload);
+                setLoading(btn, false, (type === 'snack' ? "COMPLETE MISSION" : "UPLOAD & CONTINUE"));
+
+                if (result && result.status === 'success') {
+                    nextStep();
+                } else {
+                    alert("Upload failed: " + (result?.message || "Unknown error"));
+                }
+
+            } catch (err) {
+                console.error(err);
+                setLoading(btn, false);
+                alert("Error processing image.");
+            }
+        }
+
+        // --- API ACTION: GET STATS ---
+        async function fetchStats() {
+            if (!STATE.donorId) return;
+            const scoreEl = document.getElementById('impact-score');
+            scoreEl.innerText = "...";
+
+            // Note: Our code.gs 'doGet' handles this specific stat simply
+            // But we can also use doPost if we want consistent POST behavior
+            const result = await apiCall({
+                action: 'get_stats' // This calls global stats in my Code.gs, let's fix to get personal
+            });
+            // Wait, my Code.gs get_stats gets GLOBAL stats. The user updated requirement: "Check My Score".
+            // I need to hit the 'doGet' endpoint I exposed for personal stats OR update doPost to handle personal stats.
+
+            // Let's use the doGet endpoint for personal stats as defined in Code.gs
+            // doGet -> action=get_donor_stats & donor_id=...
+            try {
+                const url = `${API_URL}?action=get_donor_stats&donor_id=${STATE.donorId}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.status === 'success') {
+                    scoreEl.innerText = data.referral_count;
+                }
+            } catch (e) {
+                console.error("Stats fetch error", e);
+                scoreEl.innerText = "-";
+            }
+        }
+
+        // --- UTILS ---
+        async function apiCall(data) {
+            try {
+                // Using text/plain to avoid CORS preflight (OPTIONS)
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: { "Content-Type": "text/plain" }
+                });
+                return await res.json();
+            } catch (err) {
+                console.error("API Error:", err);
+                // Try to alert the user with more info if possible
+                alert("Connection Error: " + err.message + ". \nCheck internet or try refreshing.");
+                return null;
+            }
+        }
+
+        function setLoading(btn, isLoading, originalText = "") {
+            if (isLoading) {
+                btn.disabled = true;
+                btn.dataset.originalText = originalText || btn.innerText;
+                btn.innerHTML = `<span class="loader mr-2"></span> Processing...`;
+            } else {
+                btn.disabled = false;
+                btn.innerText = btn.dataset.originalText || originalText;
+            }
+        }
+
+        function handleImagePreview(input, previewId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const el = document.getElementById(previewId);
+                    el.style.backgroundImage = `url(${e.target.result})`;
+                    el.classList.remove('hidden');
+                    document.getElementById(previewId.replace('preview', 'placeholder')).classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function updateReferralLink() {
+            const link = `${window.location.origin}${window.location.pathname}?ref=${STATE.donorId}`;
+            const el = document.getElementById('referral-link-container');
+            el.innerText = link;
+            el.dataset.link = link;
+        }
+
+        function copyReferralLink() {
+            const text = document.getElementById('referral-link-container').dataset.link;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Link copied to clipboard!");
+            });
+        }
+
+        function handleShare() {
+            const link = document.getElementById('referral-link-container').dataset.link;
+            const text = `I just became a hero by donating blood! You can too. Check my impact here: ${link}`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Blood Donation Hero',
+                    text: text,
+                    url: link
+                }).catch(console.error);
+            } else {
+                // Fallback for desktop/non-supported
+                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            }
+        }
+
+        // Simple Image Compressor using Canvas
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800; // Resize to max 800px width
+                        const scaleSize = MAX_WIDTH / img.width;
+
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        // Export as JPEG with 0.7 quality
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        resolve(dataUrl); // This includes "data:image/jpeg;base64,..."
+                    }
+                    img.onerror = reject;
+                }
+                reader.onerror = reject;
+            });
+        }
+
+        // --- QR CODE ---
+        function showQr() {
+            const link = document.getElementById('referral-link-container').dataset.link;
+            if (link) {
+                const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
+                document.getElementById('qr-image').src = url;
+                document.getElementById('qr-modal').classList.remove('hidden');
+            }
+        }
+
+        function closeQr() {
+            document.getElementById('qr-modal').classList.add('hidden');
+        }
+    </script>
+</body>
+
+</html>
