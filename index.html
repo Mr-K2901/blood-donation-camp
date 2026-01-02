@@ -98,6 +98,28 @@
 
             <!-- VIEW 1: REGISTRATION (THE GATE) -->
             <section id="view-1" class="hidden-view animate-fade-in">
+                <!-- Live Impact Board -->
+                <div
+                    class="bg-gradient-to-r from-red-50 to-red-100 rounded-xl p-4 mb-6 border border-red-100 shadow-sm text-center">
+                    <p class="text-xs font-bold text-red-400 uppercase tracking-widest mb-2">Live Impact</p>
+                    <div class="flex justify-center gap-8">
+                        <div>
+                            <div id="stat-registered" class="text-2xl font-black text-gray-700">-</div>
+                            <div class="text-[10px] text-gray-500 uppercase font-semibold">Joined</div>
+                        </div>
+                        <div class="w-px bg-red-200"></div>
+                        <div>
+                            <div id="stat-donated" class="text-2xl font-black text-red-600">-</div>
+                            <div class="text-[10px] text-gray-500 uppercase font-semibold">Donated</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quote -->
+                <div class="text-center mb-6">
+                    <p class="text-sm text-gray-500 italic">"The gift of blood is a gift to someone's life."</p>
+                </div>
+
                 <h2 class="text-xl font-bold text-gray-800 mb-2">Join the Cause</h2>
                 <p class="text-gray-500 text-sm mb-6">Become a hero today. Please register to proceed.</p>
 
@@ -191,7 +213,8 @@
                                     d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
                                 </path>
                             </svg>
-                            <span class="text-sm font-semibold text-gray-600">Tap to Upload Snack</span>
+                            <span class="text-sm font-semibold text-gray-600">Tap to Upload Selfie while having the
+                                snacks/refreshments</span>
                         </div>
                     </label>
                     <input type="file" id="snack-upload" accept="image/*" class="hidden"
@@ -304,12 +327,20 @@
         };
 
         // --- INIT ---
-        window.addEventListener('DOMContentLoaded', () => {
-            if (!API_URL) {
-                document.getElementById('config-modal').classList.remove('hidden');
+        window.addEventListener('load', () => {
+            // Check config
+            if (window.location.protocol === 'file:' || API_URL.includes('AKfycbx...')) {
+                // Determine if we should show config modal (simple check)
+            }
+
+            // Check localStorage
+            if (!STATE.donorId) {
+                renderView();
+                fetchGlobalStats(); // Fetch stats for new users
             } else {
                 renderView();
                 if (STATE.step === 5) fetchStats();
+                if (STATE.step === 1) fetchGlobalStats(); // Also fetch if they happen to be on step 1
             }
         });
 
@@ -420,6 +451,18 @@
         }
 
         // --- API ACTION: GET STATS ---
+        async function fetchGlobalStats() {
+            try {
+                const result = await apiCall({ action: 'get_stats' });
+                if (result && result.status === 'success') {
+                    const regEl = document.getElementById('stat-registered');
+                    const donEl = document.getElementById('stat-donated');
+                    if (regEl) regEl.innerText = result.registered;
+                    if (donEl) donEl.innerText = result.donated;
+                }
+            } catch (e) { console.error("Global stats error", e); }
+        }
+
         async function fetchStats() {
             if (!STATE.donorId) return;
             const scoreEl = document.getElementById('impact-score');

@@ -224,9 +224,26 @@ function updateDonorRow(donorId, colIndex, value, newStatus) {
 
 function getGlobalStats() {
   var sheet = getSheet();
-  var lastRow = sheet.getLastRow();
-  var count = lastRow > 1 ? lastRow - 1 : 0;
-  return { status: "success", count: count };
+  var data = sheet.getDataRange().getValues(); // Get all data
+  
+  var registeredCount = 0;
+  var donatedCount = 0;
+  
+  // Start from 1 to skip header
+  for (var i = 1; i < data.length; i++) {
+    registeredCount++;
+    var status = String(data[i][6]); // Status is at Index 6 (Col 7)
+    // If status is NOT just "Registered", it means they did something (Donated/Snacked/Completed)
+    if (status !== "Registered" && status !== "") {
+      donatedCount++;
+    }
+  }
+  
+  return { 
+    status: "success", 
+    registered: registeredCount, 
+    donated: donatedCount 
+  };
 }
 
 function getReferralCount(donorId) {
