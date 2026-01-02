@@ -133,7 +133,14 @@ function registerDonor(data) {
     }
   }
 
-  var uniqueId = "HERO-" + Math.floor(1000 + Math.random() * 9000) + "-" + Date.now().toString().slice(-4); 
+  // Generate Custom ID: Name_Last4Mobile
+  // Remove spaces/special chars from name for clean ID
+  var cleanName = name.replace(/[^a-zA-Z0-9]/g, ""); 
+  var lastFour = String(mobile).slice(-4);
+  var uniqueId = cleanName + "_" + lastFour;
+  
+  // Fallback if name is empty
+  if (cleanName.length === 0) uniqueId = "Donor_" + lastFour + "_" + Math.floor(Math.random()*1000); 
   
   sheet.appendRow([
     timestamp,
@@ -196,12 +203,24 @@ function uploadImage(data, type) {
   return { status: "success", file_url: fileUrl, message: type + " uploaded successfully!" };
 }
 
+var MAIN_FOLDER_NAME = "Blood Donation Camp 2026"; // Parent Folder
+
 function getOrCreateFolder(name) {
-  var folders = DriveApp.getFoldersByName(name);
-  if (folders.hasNext()) {
-    return folders.next();
+  // 1. Get or Create Main Folder
+  var mainFolder;
+  var mainFolders = DriveApp.getFoldersByName(MAIN_FOLDER_NAME);
+  if (mainFolders.hasNext()) {
+    mainFolder = mainFolders.next();
   } else {
-    return DriveApp.createFolder(name);
+    mainFolder = DriveApp.createFolder(MAIN_FOLDER_NAME);
+  }
+
+  // 2. Get or Create Sub-folder INSIDE Main Folder
+  var subFolders = mainFolder.getFoldersByName(name);
+  if (subFolders.hasNext()) {
+    return subFolders.next();
+  } else {
+    return mainFolder.createFolder(name);
   }
 }
 

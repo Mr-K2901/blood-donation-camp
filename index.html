@@ -189,8 +189,8 @@
 
                 <!-- Motivation Text -->
                 <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100 mb-6">
-                    <p class="text-xs text-yellow-800 font-medium">✨ "Adding a selfie will motivate us and help
-                        propagate our noble work ahead!"</p>
+                    <p class="text-xs text-yellow-800 font-medium">✨ "A selfie adds motivation and helps our noble work
+                        reach more people."</p>
                 </div>
 
                 <div class="mb-8 relative group cursor-pointer w-64 h-64 mx-auto">
@@ -365,7 +365,7 @@
     <!-- SCRIPTS -->
     <script>
         // --- CONFIG & STATE ---
-        let API_URL = "https://script.google.com/macros/s/AKfycbxvW2kFN-6UXsa2zpemYZrHut8nlsxba-bxokLStErcwhBNQTZ-P7AFbA-126oWKFyi/exec";
+        let API_URL = "https://script.google.com/macros/s/AKfycbzP-bXvI8bfz3nDbB5BAcdYS2EnTr8X7_oX919rF0F3-8JIJ3wTose5DjHJeMhoBRkA/exec";
         let STATE = {
             step: parseInt(localStorage.getItem("blood_donor_step")) || 1,
             donorId: localStorage.getItem("blood_donor_id") || null,
@@ -486,11 +486,7 @@
                 return;
             }
 
-            // Size Validation (10MB)
-            if (file.size > 10 * 1024 * 1024) {
-                alert("File is too large! Please choose an image under 10MB.");
-                return;
-            }
+            // Size Validation (10MB) - REMOVED AS REQUESTED
 
             const btn = document.getElementById(`btn-upload-${type}`);
             setLoading(btn, true, "Uploading...");
