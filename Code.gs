@@ -135,7 +135,7 @@ function registerDonor(data) {
 
   // Generate Custom ID: BloodGroup_Name_Last4Mobile
   var cleanName = name.replace(/[^a-zA-Z0-9]/g, ""); 
-  var cleanBG = bloodGroup.replace(/[^a-zA-Z0-9\+\-]/g, ""); // Allow + and -
+  var cleanBG = bloodGroup.replace(/[^a-zA-Z0-9\+\-]/g, "") || "Unknown"; // Allow + and -
   var lastFour = String(mobile).slice(-4);
   
   var uniqueId = cleanBG + "_" + cleanName + "_" + lastFour;
@@ -253,8 +253,8 @@ function getGlobalStats() {
   for (var i = 1; i < data.length; i++) {
     registeredCount++;
     var status = String(data[i][6]); // Status is at Index 6 (Col 7)
-    // If status is NOT just "Registered", it means they did something (Donated/Snacked/Completed)
-    if (status !== "Registered" && status !== "") {
+    // If status is "Completed", it means they finished the entire flow
+    if (status === "Completed") {
       donatedCount++;
     }
   }
