@@ -133,13 +133,14 @@ function registerDonor(data) {
     }
   }
 
-  // Generate Custom ID: Name_Last4Mobile
-  // Remove spaces/special chars from name for clean ID
+  // Generate Custom ID: BloodGroup_Name_Last4Mobile
   var cleanName = name.replace(/[^a-zA-Z0-9]/g, ""); 
+  var cleanBG = bloodGroup.replace(/[^a-zA-Z0-9\+\-]/g, ""); // Allow + and -
   var lastFour = String(mobile).slice(-4);
-  var uniqueId = cleanName + "_" + lastFour;
   
-  // Fallback if name is empty
+  var uniqueId = cleanBG + "_" + cleanName + "_" + lastFour;
+  
+  // Fallback
   if (cleanName.length === 0) uniqueId = "Donor_" + lastFour + "_" + Math.floor(Math.random()*1000); 
   
   sheet.appendRow([
