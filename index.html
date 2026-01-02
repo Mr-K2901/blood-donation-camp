@@ -140,7 +140,7 @@
             <!-- VIEW 2: THE DONATION (THE ACTION) -->
             <section id="view-2" class="hidden-view animate-fade-in text-center">
                 <div class="mb-6">
-                    <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">STEP 2 / 4</span>
+                    <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">STEP 2 / 5</span>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">You are a Hero, <span id="donor-name-display"
                         class="text-red-600">Friend</span>!</h2>
@@ -175,7 +175,7 @@
             <!-- VIEW 3: THE REFRESHMENT (THE BREAK) -->
             <section id="view-3" class="hidden-view animate-fade-in text-center">
                 <div class="mb-6">
-                    <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">STEP 3 / 4</span>
+                    <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">STEP 3 / 5</span>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">Time to Recharge</h2>
                 <p class="text-gray-500 text-sm mb-8">Enjoy your refreshments! Snap a photo of your snack.</p>
@@ -200,12 +200,44 @@
 
                 <button id="btn-upload-snack" onclick="uploadPhoto('snack')"
                     class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    CONTINUE
+                </button>
+            </section>
+
+            <!-- VIEW 4: THE REWARD (GIFT) -->
+            <section id="view-4" class="hidden-view animate-fade-in text-center">
+                <div class="mb-6">
+                    <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">STEP 4 / 5</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">You Earned It!</h2>
+                <p class="text-gray-500 text-sm mb-8">Show off your appreciation gift. We are proud of you.</p>
+
+                <div class="mb-8">
+                    <label for="gift-upload"
+                        class="cursor-pointer block w-full aspect-[4/3] bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-blue-50 hover:border-blue-300 transition overflow-hidden relative">
+                        <div id="gift-preview" class="hidden w-full h-full bg-cover bg-center absolute inset-0"></div>
+                        <div id="gift-placeholder" class="text-center p-4">
+                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7">
+                                </path>
+                            </svg>
+                            <span class="text-sm font-semibold text-gray-600">Tap to Upload Gift</span>
+                        </div>
+                    </label>
+                    <input type="file" id="gift-upload" accept="image/*" class="hidden"
+                        onchange="handleImagePreview(this, 'gift-preview')">
+                </div>
+
+                <button id="btn-upload-gift" onclick="uploadPhoto('gift')"
+                    class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
                     COMPLETE MISSION
                 </button>
             </section>
 
-            <!-- VIEW 4: THE AMBASSADOR (THE EXIT) -->
-            <section id="view-4" class="hidden-view animate-fade-in text-center">
+            <!-- VIEW 5: THE AMBASSADOR (THE EXIT) -->
+            <section id="view-5" class="hidden-view animate-fade-in text-center">
                 <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -277,7 +309,7 @@
                 document.getElementById('config-modal').classList.remove('hidden');
             } else {
                 renderView();
-                if (STATE.step === 4) fetchStats();
+                if (STATE.step === 5) fetchStats();
             }
         });
 
@@ -296,7 +328,7 @@
         // --- ROUTING ---
         function renderView() {
             // Hide all views
-            [1, 2, 3, 4].forEach(i => {
+            [1, 2, 3, 4, 5].forEach(i => {
                 document.getElementById(`view-${i}`).classList.add('hidden-view');
             });
 
@@ -304,11 +336,11 @@
             document.getElementById(`view-${STATE.step}`).classList.remove('hidden-view');
 
             // Update UI elements
-            if (STATE.step === 2 || STATE.step === 3 || STATE.step === 4) {
+            if (STATE.step === 2 || STATE.step === 3 || STATE.step === 4 || STATE.step === 5) {
                 const nameDisplay = document.getElementById('donor-name-display');
                 if (nameDisplay) nameDisplay.innerText = STATE.name;
             }
-            if (STATE.step === 4) {
+            if (STATE.step === 5) {
                 updateReferralLink();
             }
         }
@@ -365,14 +397,14 @@
                 const base64 = await compressImage(file);
 
                 const payload = {
-                    action: `upload_${type}`, // upload_selfie or upload_snack
+                    action: `upload_${type}`, // upload_selfie, upload_snack, upload_gift
                     donor_id: STATE.donorId,
                     image_base64: base64, // Send raw base64 string
                     filename: type
                 };
 
                 const result = await apiCall(payload);
-                setLoading(btn, false, (type === 'snack' ? "COMPLETE MISSION" : "UPLOAD & CONTINUE"));
+                setLoading(btn, false, (type === 'gift' ? "COMPLETE MISSION" : "UPLOAD & CONTINUE"));
 
                 if (result && result.status === 'success') {
                     nextStep();

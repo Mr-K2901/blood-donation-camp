@@ -19,6 +19,7 @@
 var SHEET_ID = ""; 
 var FOLDER_NAME = "BloodDonation_Selfies";
 var SNACK_FOLDER_NAME = "BloodDonation_Snacks";
+var GIFT_FOLDER_NAME = "BloodDonation_Gifts";
 
 // --- MAIN ENTRY POINT (API) ---
 function doPost(e) {
@@ -53,6 +54,8 @@ function doPost(e) {
       result = uploadImage(params, "Selfie");
     } else if (action === "upload_snack") {
       result = uploadImage(params, "Snack");
+    } else if (action === "upload_gift") {
+      result = uploadImage(params, "Gift");
     } else if (action === "get_stats") {
       result = getGlobalStats();
     } else if (action === "check_status") {
@@ -97,8 +100,8 @@ function getSheet() {
   var sheet = ss.getSheetByName("Donors");
   if (!sheet) {
     sheet = ss.insertSheet("Donors");
-    // Initialize headers
-    sheet.appendRow(["Timestamp", "DonorID", "Name", "Mobile", "BloodGroup", "ReferrerID", "Status", "SelfieURL", "SnackURL"]);
+    // Initialize headers: Timestamp, DonorID, Name, Mobile, BloodGroup, ReferrerID, Status, SelfieURL, SnackURL, GiftURL
+    sheet.appendRow(["Timestamp", "DonorID", "Name", "Mobile", "BloodGroup", "ReferrerID", "Status", "SelfieURL", "SnackURL", "GiftURL"]);
     sheet.setFrozenRows(1);
   }
   return sheet;
@@ -120,8 +123,6 @@ function registerDonor(data) {
   var allData = sheet.getDataRange().getValues();
   for (var i = 1; i < allData.length; i++) {
     if (String(allData[i][3]) === String(mobile) && mobile !== "") {
-       // Returning existing donor info could be a security risk, allowing blindly for now or returning existing ID
-       // For this MVP, let's just return the existing ID so they can continue flow
        return { 
          status: "success", 
          donor_id: allData[i][1], 
@@ -138,10 +139,11 @@ function registerDonor(data) {
     timestamp,
     uniqueId,
     name,
-    "'" + mobile, // Force string to prevent scientific notation
+    "'" + mobile, // Force string 
     bloodGroup,
     referrer,
     "Registered",
+    "",
     "",
     ""
   ]);
@@ -155,7 +157,7 @@ function registerDonor(data) {
 }
 
 function uploadImage(data, type) {
-  // data.image_base64 (no data:image/jpeg;base64 header), data.donor_id, data.filename
+  // data.image_base64 (no header), data.donor_id, data.filename
   var donorId = data.donor_id;
   if (!donorId) return { status: "error", message: "Missing Donor ID" };
   
@@ -165,20 +167,31 @@ function uploadImage(data, type) {
     base64Data = base64Data.split("base64,")[1];
   }
   
-  var folderName = (type === "Snack") ? SNACK_FOLDER_NAME : FOLDER_NAME;
+  var folderName = FOLDER_NAME;
+  if (type === "Snack") folderName = SNACK_FOLDER_NAME;
+  if (type === "Gift") folderName = GIFT_FOLDER_NAME;
+  
   var folder = getOrCreateFolder(folderName);
   
   var fileName = (data.filename || "image") + "_" + donorId + ".jpg";
   var imageBlob = Utilities.newBlob(Utilities.base64Decode(base64Data), "image/jpeg", fileName);
   
   var file = folder.createFile(imageBlob);
-  // Make file publicly viewable so we can display it if needed (optional)
+  // Make file publicly viewable so we can display it if needed
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
   
   var fileUrl = file.getDownloadUrl(); 
   
-  // Start background update of sheet
-  updateDonorRow(donorId, (type === "Snack") ? 8 : 7, fileUrl, (type === "Snack") ? "Completed" : "Donated");
+  // Update Sheet
+  // Selfie -> Col 8 (Index 7), Snack -> Col 9 (Index 8), Gift -> Col 10 (Index 9)
+  // Status -> Col 7 (Index 6)
+  var colIndex = 7;
+  var status = "Donated";
+  
+  if (type === "Snack") { colIndex = 8; status = "Snacked"; }
+  if (type === "Gift") { colIndex = 9; status = "Completed"; }
+
+  updateDonorRow(donorId, colIndex, fileUrl, status);
   
   return { status: "success", file_url: fileUrl, message: type + " uploaded successfully!" };
 }
@@ -211,7 +224,6 @@ function updateDonorRow(donorId, colIndex, value, newStatus) {
 
 function getGlobalStats() {
   var sheet = getSheet();
-  // Simply counting rows - 1 (header)
   var lastRow = sheet.getLastRow();
   var count = lastRow > 1 ? lastRow - 1 : 0;
   return { status: "success", count: count };
