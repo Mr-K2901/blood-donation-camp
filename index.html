@@ -370,11 +370,12 @@
     <!-- SCRIPTS -->
     <script>
         // --- CONFIG & STATE ---
-        let API_URL = "https://script.google.com/macros/s/AKfycbxHEYLL1eCkbGhvQKoaNoWg3wkPGQkhOpXxnbJSdj772DSAi2T71VTsSff6uIL-3shQ/exec";
+        let API_URL = "https://script.google.com/macros/s/AKfycbwzDZPrDb74PdWrymnbcUhzeRAPzQHPYGtgOi1omfaYuIfWf8UO8jGIw0OP0JCzD2VP/exec";
         let STATE = {
             step: parseInt(localStorage.getItem("blood_donor_step")) || 1,
             donorId: localStorage.getItem("blood_donor_id") || null,
             name: (localStorage.getItem("blood_donor_name") && localStorage.getItem("blood_donor_name") !== "undefined") ? localStorage.getItem("blood_donor_name") : "Hero",
+            giftUrl: localStorage.getItem("blood_donor_gift") || "",
             ref: new URLSearchParams(window.location.search).get("ref") || ""
         };
 
