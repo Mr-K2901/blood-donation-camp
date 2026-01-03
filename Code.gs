@@ -227,6 +227,8 @@ function updateDonorStatus(donorId, type, url) {
     // Compare with trimmed sheet ID
     if (String(data[i][1]).trim() === targetId) {
       
+      var newStatus = data[i][6]; // Default to current status
+      
       if (type === "selfie") {
         sheet.getRange(i+1, 8).setValue(url); // Col 8
         newStatus = "Donated";
