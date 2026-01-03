@@ -306,17 +306,9 @@
                 <h2 class="text-3xl font-bold text-gray-800 mb-2">Mission Accomplished!</h2>
                 <p class="text-gray-500 text-sm mb-4">Thank you for saving lives today.</p>
 
-                <!-- NEW: Donor Badge & Referrer -->
-                <div class="mb-6">
-                    <div class="inline-block bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2">
-                        <div class="text-[10px] text-yellow-600 uppercase font-bold tracking-wider">Your Donor Badge
-                        </div>
-                        <div id="donor-badge-display" class="text-lg font-mono font-black text-gray-800">LOADING...
-                        </div>
-                    </div>
-                    <div id="referred-by-display" class="text-xs text-gray-400 mt-2 hidden">
-                        Referred by <span id="referrer-name" class="font-bold text-gray-600"></span>
-                    </div>
+                <!-- NEW: Referrer Display Only -->
+                <div id="referred-by-display" class="text-xs text-gray-400 mb-6 hidden">
+                    Referred by <span id="referrer-name" class="font-bold text-gray-600"></span>
                 </div>
 
                 <!-- Ambassador Message -->
@@ -349,11 +341,7 @@
                         </svg>
                         Share via WhatsApp
                     </button>
-                    <div id="referral-link-container"
-                        class="bg-gray-100 p-3 rounded-lg text-xs text-gray-500 break-all text-center cursor-pointer hover:bg-gray-200 transition"
-                        onclick="copyReferralLink()">
-                        Loading link...
-                    </div>
+                    <!-- Link Removed as requested -->
                     <button onclick="showQr()"
                         class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-xl shadow-sm hover:bg-gray-50 transition flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -437,7 +425,7 @@
                 if (nameDisplay) nameDisplay.innerText = STATE.name;
             }
             if (STATE.step === 5) {
-                updateReferralLink();
+                // No link update needed, strictly dynamic now
             }
         }
 
@@ -512,10 +500,6 @@
         }
 
         function updateBadgeUI() {
-            // Update Badge ID
-            const badgeEl = document.getElementById('donor-badge-display');
-            if (badgeEl && STATE.donorId) badgeEl.innerText = STATE.donorId;
-
             // Update Referrer Name
             const refEl = document.getElementById('referred-by-display');
             const refNameEl = document.getElementById('referrer-name');
@@ -655,23 +639,14 @@
             }
         }
 
-        function updateReferralLink() {
-            const link = `${window.location.origin}${window.location.pathname}?ref=${STATE.donorId}`;
-            const el = document.getElementById('referral-link-container');
-            el.innerText = link;
-            el.dataset.link = link;
-        }
-
-        function copyReferralLink() {
-            const text = document.getElementById('referral-link-container').dataset.link;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("Link copied to clipboard!");
-            });
+        function getReferralLink() {
+            // Dynamic link generation
+            return `${window.location.origin}${window.location.pathname}?ref=${STATE.donorId || 'guest'}`;
         }
 
         function handleShare() {
-            const link = document.getElementById('referral-link-container').dataset.link;
-            const text = `I just became a hero by donating blood! You can too. Check my impact here: ${link}`;
+            const link = getReferralLink();
+            let text = `I just became a hero by donating blood! You can too. Check my impact here: ${link}`;
 
             if (navigator.share) {
                 navigator.share({
@@ -716,7 +691,7 @@
 
         // --- QR CODE ---
         function showQr() {
-            const link = document.getElementById('referral-link-container').dataset.link;
+            const link = getReferralLink();
             if (link) {
                 const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
                 document.getElementById('qr-image').src = url;
