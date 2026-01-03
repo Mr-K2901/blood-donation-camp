@@ -226,20 +226,15 @@ function updateDonorStatus(donorId, type, url) {
   for (var i = 1; i < data.length; i++) {
     // Compare with trimmed sheet ID
     if (String(data[i][1]).trim() === targetId) {
-      var newStatus = data[i][6];
       
       if (type === "selfie") {
-        sheet.getRange(i+1, 8).setValue(url); // Col 8
-        newStatus = "Donated";
-      } else if (type === "snack") {
-        sheet.getRange(i+1, 9).setValue(url); // Col 9
-        newStatus = "Snacked";
-      } else if (type === "gift") {
-        sheet.getRange(i+1, 10).setValue(url); // Col 10
-        newStatus = "Completed";
+        sheet.getRange(i+1, 8).setValue(url); // Col 8 (Selfie Rec)
+        sheet.getRange(i+1, 10).setValue(url); // Col 10 (As Gift URL for WhatsApp)
+        sheet.getRange(i+1, 7).setValue("Completed"); // Update Status to Completed
+        return true; 
       }
+      // Removed Snack/Gift specific upload logic as per 3-Step Flow
       
-      sheet.getRange(i+1, 7).setValue(newStatus); // Update Status
       return true; // Found and updated
     }
   }

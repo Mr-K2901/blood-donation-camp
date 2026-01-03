@@ -5,3 +5,15 @@ git add .
 git commit -m "Small change"
 git push
 
+1. check for the login ....if the donor is on record he or she must be redirected to respected pages as per his or her status...for example if completed redirected to last page
+
+2. same img must not be allowed to reupload ask them to verify if it is same image and as per page ask them to click the selfie and send it
+
+i can see msg on whatsapp status but i want the selfie use upploaded with gift and certifiacte(last selfie) to be shared on status with the same msg as now..
+
+5. add "selfie of gift and certificate "in share via whatsapp with a msg no referal there..
+
+
+recrssively check for previous updated as well if working correct must not be touvhed or modified without letting me know abt it..
+
+and make sure that logic will work in any possible case and all the above point are resolved
