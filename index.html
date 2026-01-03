@@ -652,14 +652,17 @@
             let text = "✨ Mission Accomplished! ✨\nI just donated blood at the Savitribai Phule Pune University Camp 2026. Feelin' proud! 💪🩸";
 
             if (STATE.giftUrl) {
+                // Determine if it's an image link (Google Drive)
                 text += `\n\nSee my Certificate/Gift here: ${STATE.giftUrl}`;
             }
 
+            // Web Share API (Mobile)
             if (navigator.share) {
                 navigator.share({
                     text: text
                 }).catch(console.error);
             } else {
+                // Fallback
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
             }
         }

@@ -119,17 +119,27 @@ function registerDonor(data) {
   var bloodGroup = data.blood_group || "";
   var referrer = data.referrer || "";
   
-  // Check for duplicates based on mobile (Simple check)
+  // Check for duplicates based on mobile (Robust check: Digits Only)
   var allData = sheet.getDataRange().getValues();
+  // Remove all non-digit characters (e.g. spaces, dashes, +91)
+  var inputMobileClean = String(mobile).replace(/\D/g, "").slice(-10); // Keep last 10 digits to be safe
+
   for (var i = 1; i < allData.length; i++) {
-    if (String(allData[i][3]) === String(mobile) && mobile !== "") {
+    // Sanitize sheet data
+    var rawSheetMobile = String(allData[i][3]);
+    var sheetMobileClean = rawSheetMobile.replace(/\D/g, "").slice(-10);
+    
+    // Compare last 10 digits
+    if (sheetMobileClean === inputMobileClean && inputMobileClean.length >= 10) {
+       // Returning existing donor info
        return { 
          status: "success", 
          donor_id: allData[i][1], 
          name: allData[i][2],
-         current_status: allData[i][6], // Return actual status
-         referrer: allData[i][5], // Return original referrer
-         recovered: true,
+         current_status: allData[i][6], // Status
+         referrer: allData[i][5], // Referrer
+         gift_url: allData[i][9], // Gift URL (Col 10)
+         recovered: true, // IMPORTANT FLAG
          message: "Welcome back!" 
        };
     }
