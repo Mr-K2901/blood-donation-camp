@@ -127,6 +127,8 @@ function registerDonor(data) {
          status: "success", 
          donor_id: allData[i][1], 
          name: allData[i][2],
+         current_status: allData[i][6], // Return actual status
+         referrer: allData[i][5], // Return original referrer
          recovered: true,
          message: "Welcome back!" 
        };
@@ -164,68 +166,103 @@ function registerDonor(data) {
   };
 }
 
-function uploadImage(data, type) {
-  // data.image_base64 (no header), data.donor_id, data.filename
-  var donorId = data.donor_id;
-  if (!donorId) return { status: "error", message: "Missing Donor ID" };
-  
-  // Handle Base64 header if present
-  var base64Data = data.image_base64;
-  if (base64Data.indexOf("base64,") > -1) {
-    base64Data = base64Data.split("base64,")[1];
-  }
-  
-  var folderName = FOLDER_NAME;
-  if (type === "Snack") folderName = SNACK_FOLDER_NAME;
-  if (type === "Gift") folderName = GIFT_FOLDER_NAME;
-  
-  var folder = getOrCreateFolder(folderName);
-  
-  var fileName = (data.filename || "image") + "_" + donorId + ".jpg";
-  var imageBlob = Utilities.newBlob(Utilities.base64Decode(base64Data), "image/jpeg", fileName);
-  
-  var file = folder.createFile(imageBlob);
-  // Make file publicly viewable so we can display it if needed
-  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-  
-  var fileUrl = file.getDownloadUrl(); 
-  
-  // Update Sheet
-  // Selfie -> Col 8 (Index 7), Snack -> Col 9 (Index 8), Gift -> Col 10 (Index 9)
-  // Status -> Col 7 (Index 6)
-  var colIndex = 7;
-  var status = "Donated";
-  
-  if (type === "Snack") { colIndex = 8; status = "Snacked"; }
-  if (type === "Gift") { colIndex = 9; status = "Completed"; }
+// Check if user is registered (optional helper)
+function checkUser(mobile) {
+   // ... existing logic if needed ...
+}
 
-  updateDonorRow(donorId, colIndex, fileUrl, status);
+// 2. Upload Image
+function uploadImage(data) {
+  try {
+    var mainFolder = getOrCreateFolder(MAIN_FOLDER_NAME); // Use MAIN_FOLDER_NAME for the top-level folder
+    
+    // Sub-folders based on type
+    var subFolder;
+    if (data.type === "selfie") subFolder = getOrCreateNestedFolder(mainFolder, FOLDER_NAME);
+    else if (data.type === "snack") subFolder = getOrCreateNestedFolder(mainFolder, SNACK_FOLDER_NAME);
+    else if (data.type === "gift") subFolder = getOrCreateNestedFolder(mainFolder, GIFT_FOLDER_NAME);
+    else subFolder = mainFolder; // Fallback to main folder if type is unknown
+    
+    // Handle Base64 header if present
+    var base64Data = data.image_base64 || data.image; // Use image_base64 or image
+    if (base64Data.indexOf("base64,") > -1) {
+      base64Data = base64Data.split("base64,")[1];
+    }
+
+    var contentType = data.mimeType || "image/jpeg";
+    var fileName = (data.filename || "image") + "_" + data.donor_id + ".jpg"; // Ensure donor_id is used in filename
+    var blob = Utilities.newBlob(Utilities.base64Decode(base64Data), contentType, fileName);
+    var file = subFolder.createFile(blob);
+    
+    // Make file publicly viewable so we can display it if needed
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+    // Update Sheet Status
+    updateDonorStatus(data.donor_id, data.type, file.getDownloadUrl()); // Use getDownloadUrl() for direct link
+    
+    return { status: "success", file_url: file.getDownloadUrl() };
+  } catch (e) {
+    return { status: "error", message: e.toString() };
+  }
+}
+
+// Helper: Update Status in Sheet
+function updateDonorStatus(donorId, type, url) {
+  var sheet = getSheet();
+  var data = sheet.getDataRange().getValues();
   
-  return { status: "success", file_url: fileUrl, message: type + " uploaded successfully!" };
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][1]) === String(donorId)) {
+      // Columns: 7=Before(Selfie), 8=After(Snack), 9=Gift(Url) - wait indices are 0-based
+      // Index 6 = Status
+      // Index 7 = Selfie URL
+      // Index 8 = Snack URL
+      // Index 9 = Gift URL
+      
+      var newStatus = data[i][6]; // Keep existing
+      
+      if (type === "selfie") {
+        sheet.getRange(i+1, 8).setValue(url); // Col 8 (Index 7)
+        newStatus = "Donated";
+      } else if (type === "snack") {
+        sheet.getRange(i+1, 9).setValue(url); // Col 9 (Index 8)
+        newStatus = "Snacked";
+      } else if (type === "gift") {
+        sheet.getRange(i+1, 10).setValue(url); // Col 10 (Index 9)
+        newStatus = "Completed";
+      }
+      
+      sheet.getRange(i+1, 7).setValue(newStatus); // Update Status (Col 7, Index 6)
+      break;
+    }
+  }
 }
 
 var MAIN_FOLDER_NAME = "Blood Donation Camp 2026"; // Parent Folder
 
 function getOrCreateFolder(name) {
-  // 1. Get or Create Main Folder
-  var mainFolder;
-  var mainFolders = DriveApp.getFoldersByName(MAIN_FOLDER_NAME);
-  if (mainFolders.hasNext()) {
-    mainFolder = mainFolders.next();
+  // This function is now for the top-level folder
+  var folders = DriveApp.getFoldersByName(name);
+  if (folders.hasNext()) {
+    return folders.next();
   } else {
-    mainFolder = DriveApp.createFolder(MAIN_FOLDER_NAME);
+    return DriveApp.createFolder(name);
   }
+}
 
-  // 2. Get or Create Sub-folder INSIDE Main Folder
-  var subFolders = mainFolder.getFoldersByName(name);
+function getOrCreateNestedFolder(parentFolder, name) {
+  // This function creates/gets sub-folders within a parent
+  var subFolders = parentFolder.getFoldersByName(name);
   if (subFolders.hasNext()) {
     return subFolders.next();
   } else {
-    return mainFolder.createFolder(name);
+    return parentFolder.createFolder(name);
   }
 }
 
 function updateDonorRow(donorId, colIndex, value, newStatus) {
+  // This function is now deprecated by updateDonorStatus, but keeping it for completeness if other parts still use it.
+  // It's not used by the new uploadImage logic.
   var sheet = getSheet();
   var data = sheet.getDataRange().getValues();
   
@@ -242,6 +279,7 @@ function updateDonorRow(donorId, colIndex, value, newStatus) {
   }
 }
 
+// 3. Get Stats
 function getGlobalStats() {
   var sheet = getSheet();
   var data = sheet.getDataRange().getValues(); // Get all data
@@ -266,13 +304,18 @@ function getGlobalStats() {
   };
 }
 
+// 4. Get Referral Count
 function getReferralCount(donorId) {
   var sheet = getSheet();
   var data = sheet.getDataRange().getValues();
   var count = 0;
   
   for (var i = 1; i < data.length; i++) {
-    if (String(data[i][5]) === String(donorId)) { // ReferrerID at index 5
+    var refId = String(data[i][5]);
+    var status = String(data[i][6]);
+    
+    // Only count if Referrer match AND Status is Completed
+    if (refId === String(donorId) && status === "Completed") { 
       count++;
     }
   }

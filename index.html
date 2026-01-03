@@ -304,7 +304,20 @@
                     </svg>
                 </div>
                 <h2 class="text-3xl font-bold text-gray-800 mb-2">Mission Accomplished!</h2>
-                <p class="text-gray-500 text-sm mb-6">Thank you for saving lives today.</p>
+                <p class="text-gray-500 text-sm mb-4">Thank you for saving lives today.</p>
+
+                <!-- NEW: Donor Badge & Referrer -->
+                <div class="mb-6">
+                    <div class="inline-block bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2">
+                        <div class="text-[10px] text-yellow-600 uppercase font-bold tracking-wider">Your Donor Badge
+                        </div>
+                        <div id="donor-badge-display" class="text-lg font-mono font-black text-gray-800">LOADING...
+                        </div>
+                    </div>
+                    <div id="referred-by-display" class="text-xs text-gray-400 mt-2 hidden">
+                        Referred by <span id="referrer-name" class="font-bold text-gray-600"></span>
+                    </div>
+                </div>
 
                 <!-- Ambassador Message -->
                 <div class="bg-blue-50 p-4 rounded-xl mb-6 border border-blue-100">
@@ -414,6 +427,10 @@
             // Show current view
             document.getElementById(`view-${STATE.step}`).classList.remove('hidden-view');
 
+            if (STATE.step === 5) {
+                updateBadgeUI();
+            }
+
             // Update UI elements
             if (STATE.step === 2 || STATE.step === 3 || STATE.step === 4 || STATE.step === 5) {
                 const nameDisplay = document.getElementById('donor-name-display');
@@ -473,13 +490,19 @@
                 localStorage.setItem("blood_donor_id", STATE.donorId);
                 localStorage.setItem("blood_donor_name", STATE.name);
 
-                // If returning user, jump to end
+                // If returning user, smart redirect based on status
                 if (result.recovered) {
-                    STATE.step = 5;
-                    localStorage.setItem("blood_donor_step", 5);
+                    STATE.referrer = result.referrer || STATE.referrer; // Use stored referrer if available
+
+                    if (result.current_status === "Completed") STATE.step = 5;
+                    else if (result.current_status === "Snacked") STATE.step = 4;
+                    else if (result.current_status === "Donated") STATE.step = 3;
+                    else STATE.step = 2; // Registered but not uploaded
+
+                    localStorage.setItem("blood_donor_step", STATE.step);
                     renderView();
                     fetchStats();
-                    alert(result.message); // "Welcome back!"
+                    // No alert, just jump
                 } else {
                     nextStep();
                 }
@@ -487,6 +510,26 @@
                 alert("Registration failed: " + (result?.message || "Unknown error"));
             }
         }
+
+        function updateBadgeUI() {
+            // Update Badge ID
+            const badgeEl = document.getElementById('donor-badge-display');
+            if (badgeEl && STATE.donorId) badgeEl.innerText = STATE.donorId;
+
+            // Update Referrer Name
+            const refEl = document.getElementById('referred-by-display');
+            const refNameEl = document.getElementById('referrer-name');
+
+            if (STATE.referrer && STATE.referrer.includes('_')) {
+                // Format: Blood_Name_Mobile -> extract Name (index 1)
+                const parts = STATE.referrer.split('_');
+                if (parts.length >= 2) {
+                    refNameEl.innerText = parts[1];
+                    refEl.classList.remove('hidden');
+                }
+            }
+        }
+        // End of updateBadgeUI
 
         // --- API ACTION: UPLOAD ---
         async function uploadPhoto(type) {
