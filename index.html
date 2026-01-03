@@ -221,83 +221,104 @@
 
             <!-- VIEW 3 Removed (Snack Logic Removed) -->
 
-            <!-- VIEW 4: THE REWARD (GIFT) - NOW STEP 3 -->
+            <!-- VIEW 4: THE REWARD (GIFT) -->
             <section id="view-4" class="hidden-view animate-fade-in text-center">
                 <div class="mb-6">
-                    </svg>
-                    <span class="text-sm font-semibold text-gray-600">Tap to Upload Gift</span>
+                    <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">STEP 3 / 4</span>
                 </div>
-                </label>
-                <input type="file" id="gift-upload" accept="image/*" class="hidden"
-                    onchange="handleImagePreview(this, 'gift-preview')">
-        </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">You Earned It!</h2>
+                <p class="text-gray-500 text-sm mb-8">Show off your appreciation gift and certificate. We are proud of
+                    you.</p>
 
-        <button id="btn-upload-gift" onclick="uploadPhoto('gift')"
-            class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
-            COMPLETE MISSION
-        </button>
-        </section>
-
-        <!-- VIEW 5: THE AMBASSADOR (THE EXIT) -->
-        <section id="view-5" class="hidden-view animate-fade-in text-center">
-            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-            </div>
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">Mission Accomplished!</h2>
-            <p class="text-gray-500 text-sm mb-4">Thank you for saving lives today.</p>
-
-            <!-- NEW: Referrer Display Only -->
-            <div id="referred-by-display" class="text-xs text-gray-400 mb-6 hidden">
-                Referred by <span id="referrer-name" class="font-bold text-gray-600"></span>
-            </div>
-
-            <!-- Ambassador Message -->
-            <div class="bg-blue-50 p-4 rounded-xl mb-6 border border-blue-100">
-                <p class="text-sm text-blue-900 font-semibold mb-2">Be an Ambassador!</p>
-                <p class="text-xs text-blue-700 leading-relaxed">
-                    Share your unique link below. Guide your friends to complete the steps.
-                    <br><br>
-                    <span class="font-bold bg-blue-200 px-1 rounded">PRO TIP:</span> Any donor with <span
-                        class="font-black">5+ Referrals</span> will receive extra special perks!
-                </p>
-            </div>
-
-            <!-- Stats Card -->
-            <div class="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
-                <div class="text-xs text-gray-400 font-bold uppercase tracking-wide">Your Impact Score</div>
-                <div id="impact-score" class="text-4xl font-black text-red-600 mt-1">0</div>
-                <div class="text-xs text-gray-400 mt-1">Friends Referred</div>
-                <button onclick="fetchStats()" class="text-xs text-blue-500 hover:text-blue-700 underline mt-2">Refresh
-                    Score</button>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="space-y-3">
-                <div class="mb-2 text-center">
-                    <p class="text-[10px] text-gray-400">👇 Click to post on your status!</p>
+                <div class="mb-8">
+                    <label for="gift-upload"
+                        class="cursor-pointer block w-full aspect-[4/3] bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-blue-50 hover:border-blue-300 transition overflow-hidden relative">
+                        <div id="gift-preview" class="hidden w-full h-full bg-cover bg-center absolute inset-0"></div>
+                        <div id="gift-placeholder" class="text-center p-4">
+                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7">
+                                </path>
+                            </svg>
+                            <span class="text-sm font-semibold text-gray-600">Tap to Upload Gift</span>
+                        </div>
+                    </label>
+                    <input type="file" id="gift-upload" accept="image/*" class="hidden"
+                        onchange="handleImagePreview(this, 'gift-preview')">
                 </div>
-                <button onclick="handleShare()"
-                    class="w-full bg-green-500 text-white font-bold py-3 rounded-xl shadow hover:bg-green-600 transition flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                    </svg>
-                    Share to WhatsApp Status
+
+                <button id="btn-upload-gift" onclick="uploadPhoto('gift')"
+                    class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    COMPLETE MISSION
                 </button>
-                <!-- Link Removed as requested -->
-                <button onclick="showQr()"
-                    class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-xl shadow-sm hover:bg-gray-50 transition flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 4v1m6 11h2m-6 0h-2v4h2v-4zM6 6h6v6H6V6zm1.5 1.5v3h3v-3h-3zm6.5 6.5h6v6h-6v-6zm1.5 1.5v3h3v-3h-3zM6 18h6v6H6v-6zm1.5 1.5v3h3v-3h-3z">
-                        </path>
+            </section>
+
+            <!-- VIEW 5: THE AMBASSADOR (THE EXIT) -->
+            <section id="view-5" class="hidden-view animate-fade-in text-center">
+                <div class="mb-6">
+                    <span class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-bold">STEP 4 /
+                        4</span>
+                </div>
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
-                    Show QR Code
-                </button>
-            </div>
-        </section>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Mission Accomplished!</h2>
+                <p class="text-gray-500 text-sm mb-4">Thank you for saving lives today.</p>
+
+                <!-- NEW: Referrer Display Only -->
+                <div id="referred-by-display" class="text-xs text-gray-400 mb-6 hidden">
+                    Referred by <span id="referrer-name" class="font-bold text-gray-600"></span>
+                </div>
+
+                <!-- Ambassador Message -->
+                <div class="bg-blue-50 p-4 rounded-xl mb-6 border border-blue-100">
+                    <p class="text-sm text-blue-900 font-semibold mb-2">Be an Ambassador!</p>
+                    <p class="text-xs text-blue-700 leading-relaxed">
+                        Share your unique link below. Guide your friends to complete the steps.
+                        <br><br>
+                        <span class="font-bold bg-blue-200 px-1 rounded">PRO TIP:</span> Any donor with <span
+                            class="font-black">5+ Referrals</span> will receive extra special perks!
+                    </p>
+                </div>
+
+                <!-- Stats Card -->
+                <div class="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
+                    <div class="text-xs text-gray-400 font-bold uppercase tracking-wide">Your Impact Score</div>
+                    <div id="impact-score" class="text-4xl font-black text-red-600 mt-1">0</div>
+                    <div class="text-xs text-gray-400 mt-1">Friends Referred</div>
+                    <button onclick="fetchStats()"
+                        class="text-xs text-blue-500 hover:text-blue-700 underline mt-2">Refresh
+                        Score</button>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    <div class="mb-2 text-center">
+                        <p class="text-[10px] text-gray-400">👇 Click to post on your status!</p>
+                    </div>
+                    <button onclick="handleShare()"
+                        class="w-full bg-green-500 text-white font-bold py-3 rounded-xl shadow hover:bg-green-600 transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                        </svg>
+                        Share to WhatsApp Status
+                    </button>
+                    <!-- Link Removed as requested -->
+                    <button onclick="showQr()"
+                        class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-xl shadow-sm hover:bg-gray-50 transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4v1m6 11h2m-6 0h-2v4h2v-4zM6 6h6v6H6V6zm1.5 1.5v3h3v-3h-3zm6.5 6.5h6v6h-6v-6zm1.5 1.5v3h3v-3h-3zM6 18h6v6H6v-6zm1.5 1.5v3h3v-3h-3z">
+                            </path>
+                        </svg>
+                        Show QR Code
+                    </button>
+                </div>
+            </section>
 
         </div>
     </main>
@@ -312,7 +333,7 @@
     <!-- SCRIPTS -->
     <script>
         // --- CONFIG & STATE ---
-        let API_URL = "https://script.google.com/macros/s/AKfycby5UwPaKv2SwXxZtmhJSc-KIegSWKerWzAcdvCvIyq24GV96g6gxo0O7A0kEnViYMUX/exec";
+        let API_URL = "https://script.google.com/macros/s/AKfycby9thWqQ27vvCqcFSIJnuZkd-S5LSnmwPHs6-otBkzi-ST7Td1QuAIbJpqROx5znUnq/exec";
         let STATE = {
             step: parseInt(localStorage.getItem("blood_donor_step")) || 1,
             donorId: localStorage.getItem("blood_donor_id") || null,
@@ -334,7 +355,7 @@
                 fetchGlobalStats(); // Fetch stats for new users
             } else {
                 renderView();
-                if (STATE.step === 5) fetchStats();
+                if (STATE.step === 4) fetchStats(); // Fetch stats if on final step
                 if (STATE.step === 1) fetchGlobalStats(); // Also fetch if they happen to be on step 1
             }
         });
@@ -353,25 +374,25 @@
 
         // --- ROUTING ---
         function renderView() {
-            // Hide all views
-            // Valid Steps: 1 (Register), 2 (Selfie/Donate), 3/5 (Ambassador - ID view-5)
-            [1, 2, 5].forEach(i => {
+            // Hide all views. Restore 4 to the list to fix Visual Overlap bug.
+            [1, 2, 4, 5].forEach(i => {
                 const el = document.getElementById(`view-${i}`);
                 if (el) el.classList.add('hidden-view');
             });
 
             // Map logical steps to view IDs
             // Step 1 -> view-1
-            // Step 2 -> view-2
-            // Step 3 (Final) -> view-5
-            // Legacy Step 4/5 -> view-5
+            // Step 2 -> view-2 (Selfie)
+            // Step 3 -> view-4 (Gift)
+            // Step 4 -> view-5 (Ambassador)
             let viewId = `view-${STATE.step}`;
-            if (STATE.step >= 3) viewId = 'view-5'; // Universal catch for completed steps
+            if (STATE.step === 3) viewId = 'view-4';
+            if (STATE.step >= 4) viewId = 'view-5';
 
             const viewEl = document.getElementById(viewId);
             if (viewEl) viewEl.classList.remove('hidden-view');
 
-            if (STATE.step >= 3) { // Any final state
+            if (STATE.step >= 4) { // View 5
                 updateBadgeUI();
             }
 
@@ -438,8 +459,9 @@
                 if (result.recovered) {
                     STATE.referrer = result.referrer || STATE.referrer; // Use stored referrer if available
 
-                    if (result.current_status === "Completed") STATE.step = 3; // Final Step
-                    else if (result.current_status === "Donated") STATE.step = 3; // Treat legacy Donated as Completed (or 2?) -> Actually 3 is safer
+                    if (result.current_status === "Completed") STATE.step = 4; // Final
+                    else if (result.current_status === "Donated") STATE.step = 3; // Gift Step
+                    else if (result.current_status === "Snacked") STATE.step = 3; // Legacy Snack -> Gift
                     else STATE.step = 2; // Registered but not uploaded
 
                     localStorage.setItem("blood_donor_step", STATE.step);
@@ -499,14 +521,17 @@
                 setLoading(btn, false, (type === 'gift' ? "COMPLETE MISSION" : "UPLOAD & CONTINUE"));
 
                 if (result && result.status === 'success') {
-                    // Update State to Final Logic
-                    STATE.step = 3; // Go to Ambassador view directly
+                    if (type === 'gift') {
+                        // Gift done -> Completed logic
+                        STATE.giftUrl = result.file_url;
+                        localStorage.setItem("blood_donor_gift", STATE.giftUrl);
+                        STATE.step = 4; // Final Step
+                    } else {
+                        // Selfie done -> Next Step (Gift)
+                        STATE.step++;
+                    }
                     localStorage.setItem("blood_donor_step", STATE.step);
-                    // Also save this photo as Gift URL for WhatsApp
-                    if (type === 'selfie') STATE.giftUrl = result.file_url;
-                    localStorage.setItem("blood_donor_gift", STATE.giftUrl); // Persist
-
-                    renderView(); // Render manually instead of nextStep()
+                    renderView();
                 } else {
                     alert("Upload failed: " + (result?.message || "Unknown error"));
                 }

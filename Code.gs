@@ -228,12 +228,14 @@ function updateDonorStatus(donorId, type, url) {
     if (String(data[i][1]).trim() === targetId) {
       
       if (type === "selfie") {
-        sheet.getRange(i+1, 8).setValue(url); // Col 8 (Selfie Rec)
-        sheet.getRange(i+1, 10).setValue(url); // Col 10 (As Gift URL for WhatsApp)
-        sheet.getRange(i+1, 7).setValue("Completed"); // Update Status to Completed
-        return true; 
+        sheet.getRange(i+1, 8).setValue(url); // Col 8
+        newStatus = "Donated";
+      } else if (type === "gift") {
+        sheet.getRange(i+1, 10).setValue(url); // Col 10
+        newStatus = "Completed";
       }
-      // Removed Snack/Gift specific upload logic as per 3-Step Flow
+      
+      sheet.getRange(i+1, 7).setValue(newStatus); // Update Status
       
       return true; // Found and updated
     }
