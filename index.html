@@ -472,7 +472,17 @@
                 STATE.name = result.name;
                 localStorage.setItem("blood_donor_id", STATE.donorId);
                 localStorage.setItem("blood_donor_name", STATE.name);
-                nextStep();
+
+                // If returning user, jump to end
+                if (result.recovered) {
+                    STATE.step = 5;
+                    localStorage.setItem("blood_donor_step", 5);
+                    renderView();
+                    fetchStats();
+                    alert(result.message); // "Welcome back!"
+                } else {
+                    nextStep();
+                }
             } else {
                 alert("Registration failed: " + (result?.message || "Unknown error"));
             }
