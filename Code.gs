@@ -205,7 +205,11 @@ function uploadImage(data) {
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
     // Update Sheet Status
-    updateDonorStatus(data.donor_id, data.type, file.getDownloadUrl()); // Use getDownloadUrl() for direct link
+    var sheetUpdated = updateDonorStatus(data.donor_id, data.type, file.getDownloadUrl());
+    
+    if (!sheetUpdated) {
+        return { status: "error", message: "Image uploaded to Drive, but Donor Record not found in Sheet. Check Donor ID." };
+    }
     
     return { status: "success", file_url: file.getDownloadUrl() };
   } catch (e) {
@@ -217,32 +221,29 @@ function uploadImage(data) {
 function updateDonorStatus(donorId, type, url) {
   var sheet = getSheet();
   var data = sheet.getDataRange().getValues();
+  var targetId = String(donorId).trim(); // Trim input ID
   
   for (var i = 1; i < data.length; i++) {
-    if (String(data[i][1]) === String(donorId)) {
-      // Columns: 7=Before(Selfie), 8=After(Snack), 9=Gift(Url) - wait indices are 0-based
-      // Index 6 = Status
-      // Index 7 = Selfie URL
-      // Index 8 = Snack URL
-      // Index 9 = Gift URL
-      
-      var newStatus = data[i][6]; // Keep existing
+    // Compare with trimmed sheet ID
+    if (String(data[i][1]).trim() === targetId) {
+      var newStatus = data[i][6];
       
       if (type === "selfie") {
-        sheet.getRange(i+1, 8).setValue(url); // Col 8 (Index 7)
+        sheet.getRange(i+1, 8).setValue(url); // Col 8
         newStatus = "Donated";
       } else if (type === "snack") {
-        sheet.getRange(i+1, 9).setValue(url); // Col 9 (Index 8)
+        sheet.getRange(i+1, 9).setValue(url); // Col 9
         newStatus = "Snacked";
       } else if (type === "gift") {
-        sheet.getRange(i+1, 10).setValue(url); // Col 10 (Index 9)
+        sheet.getRange(i+1, 10).setValue(url); // Col 10
         newStatus = "Completed";
       }
       
-      sheet.getRange(i+1, 7).setValue(newStatus); // Update Status (Col 7, Index 6)
-      break;
+      sheet.getRange(i+1, 7).setValue(newStatus); // Update Status
+      return true; // Found and updated
     }
   }
+  return false; // Not found
 }
 
 var MAIN_FOLDER_NAME = "Blood Donation Camp 2026"; // Parent Folder
