@@ -51,11 +51,11 @@ function doPost(e) {
     if (action === "register") {
       result = registerDonor(params);
     } else if (action === "upload_selfie") {
-      result = uploadImage(params, "Selfie");
+      result = uploadImage(params, "selfie");
     } else if (action === "upload_snack") {
-      result = uploadImage(params, "Snack");
+      result = uploadImage(params, "snack");
     } else if (action === "upload_gift") {
-      result = uploadImage(params, "Gift");
+      result = uploadImage(params, "gift");
     } else if (action === "get_stats") {
       result = getGlobalStats();
     } else if (action === "check_status") {
@@ -179,15 +179,19 @@ function checkUser(mobile) {
 }
 
 // 2. Upload Image
-function uploadImage(data) {
+function uploadImage(data, type) {
   try {
-    var mainFolder = getOrCreateFolder(MAIN_FOLDER_NAME); // Use MAIN_FOLDER_NAME for the top-level folder
+    // If type is not passed arguments, try data.type, else unknown
+    type = type || data.type || "unknown";
+    type = type.toLowerCase(); // Ensure consistency
+    
+    var mainFolder = getOrCreateFolder(MAIN_FOLDER_NAME);
     
     // Sub-folders based on type
     var subFolder;
-    if (data.type === "selfie") subFolder = getOrCreateNestedFolder(mainFolder, FOLDER_NAME);
-    else if (data.type === "snack") subFolder = getOrCreateNestedFolder(mainFolder, SNACK_FOLDER_NAME);
-    else if (data.type === "gift") subFolder = getOrCreateNestedFolder(mainFolder, GIFT_FOLDER_NAME);
+    if (type === "selfie") subFolder = getOrCreateNestedFolder(mainFolder, FOLDER_NAME);
+    else if (type === "snack") subFolder = getOrCreateNestedFolder(mainFolder, SNACK_FOLDER_NAME);
+    else if (type === "gift") subFolder = getOrCreateNestedFolder(mainFolder, GIFT_FOLDER_NAME);
     else subFolder = mainFolder; // Fallback to main folder if type is unknown
     
     // Handle Base64 header if present
@@ -205,7 +209,7 @@ function uploadImage(data) {
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
     // Update Sheet Status
-    var sheetUpdated = updateDonorStatus(data.donor_id, data.type, file.getDownloadUrl());
+    var sheetUpdated = updateDonorStatus(data.donor_id, type, file.getDownloadUrl());
     
     if (!sheetUpdated) {
         return { status: "error", message: "Image uploaded to Drive, but Donor Record not found in Sheet. Check Donor ID." };
